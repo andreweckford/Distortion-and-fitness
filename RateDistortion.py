@@ -189,7 +189,7 @@ def minmaxAverageDistortion(px,dxy):
 # Gets the rate-distortion function using the Blahut-Arimoto method from Blahut's original paper
 # Faster than the EM-based method but doesn't work with all the results, particularly where the
 # slope of R(D) is constant
-def getRD_BA(px,dxy,smin=-10,smax=0,q0=None,num_iter=1000000,ba_tol=1e-8,numPoints=100):
+def getRD_BA(px,dxy,smin=-10,smax=0,q0=None,num_iter=1000000,ba_tol=1e-8,numPoints=100,show_pb=False):
     s_v = np.linspace(smin,smax,numPoints)
     rate_v = np.zeros(len(s_v))
     dist_v = np.zeros(len(s_v))
@@ -199,6 +199,9 @@ def getRD_BA(px,dxy,smin=-10,smax=0,q0=None,num_iter=1000000,ba_tol=1e-8,numPoin
         q = np.ones(ny)/ny
     else:
         q = q0
+        
+    if show_pb is True:
+        pb = ProgressBar(len(s_v),40)
 
     for i in range(len(s_v)):
 
@@ -233,11 +236,17 @@ def getRD_BA(px,dxy,smin=-10,smax=0,q0=None,num_iter=1000000,ba_tol=1e-8,numPoin
         rate_v[i] = rr
         dist_v[i] = dd
         pxy_v.append(stack(pxy))
+        
+        if show_pb is True:
+            pb.iterate()
 
     r = {}
     r['Dmax_v'] = dist_v
     r['r_v'] = rate_v
     r['p'] = pxy_v
+    
+    if show_pb is True:
+        pb.hide()
 
     return r
 
